@@ -41,45 +41,46 @@
 			}
 			
 			sampler2D _MainTex;
-			fixed4 _Color;
-			float _ColorSteps;
+			uniform fixed4 _Color;
+			uniform float _ColorSteps;
 
 			fixed4 frag (v2f i) : SV_Target
 			{
 				fixed4 col = tex2D(_MainTex, i.uv);
 				fixed greyscale = (col.r + col.g + col.b)/3;
-				col = _Color;
-
 				greyscale = round(greyscale*_ColorSteps)/_ColorSteps;
 
 				float2 ps = i.scr_pos.xy *_ScreenParams.xy / i.scr_pos.w;
+				ps.x = round(ps.x);
+				ps.y = round(ps.y);
+
 				fixed val = 0;
 				if (greyscale >= 0.8f) {
 					val = 1;
 				}
 				else
 				if (greyscale >= 0.6f) {
-					if ((int)ps.x % 4 != 0) {
+					if (ps.x % 4 != 0) {
 						val = 1;
 					}
 				}
 				else
 				if (greyscale >= 0.4f) {
-					if ((int)ps.x % 2 == 0) {
+					if (ps.x % 2 == 0) {
 						val = 1;
 					}
 				}
 				else
 				if (greyscale >= 0.2f) {
-					if ((int)ps.x % 4 == 0) {
+					if (ps.x % 4 == 0) {
 						val = 1;
 					}
-					if ((int)ps.y % 2 == 0) {
+					if (ps.y % 2 == 0) {
 						val = 0;
 					}
 				}
 
-				return val * col;
+				return val * _Color;
 			}
 			ENDCG
 		}
